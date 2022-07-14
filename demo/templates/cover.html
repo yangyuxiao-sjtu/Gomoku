@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>    
+    <title>Gomoku</title>
+    <link type="text/css" rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/lib/jquery-3.6.0.min.js"></script>
+    <style>
+    .button { 
+        display: inline-block;
+        padding: 50px 50px;
+        font-size: 90px;
+        cursor: pointer;
+        text-align: center;   
+        text-decoration: none;
+        outline: none;
+        color: #9fccf6;
+        background-color: #e1696b;
+        border: 10px solid #9fccf6;
+        border-radius: 50px;
+        box-shadow: 0 30px #999;
+       
+        }
+     
+        .button:hover {background-color: #e213ae}
+     
+        .button:active {
+        background-color: #bd038e;
+        box-shadow: 0 50px #666;
+        transform: translateY(4px);
+        }
+        body{
+            background-repeat: no-repeat;
+            background-size: 100% 200%;
+        }
+    </style>
+            <h1 >Gomoku  v1.0  </h1>
+            <h5> --made by yyx</h5>
+</head>
+ <body background="../static/image/2.jpg">       
+    <script>
+        function human_vs_human(){
+            window.location.href='http://127.0.0.1:5000/human';
+        }
+        function AI_vs_human(){
+            window.location.href='http://127.0.0.1:5000/index';
+
+        }
+    </script> 
+    <div style="text-align:center">
+        <p>
+            本程序分为人机对战和人人对战，采取白方第三手可以采取换手规则。
+            <br>人机对战中高难度AI为基于决策树的6搜索+6算杀模式，而低难度则是4搜索+4算杀.
+        </p> 
+        <input id = "H-vs-H"  type = "button" class="button"  value = 人人对战 ondblclick = "human_vs_human();" />
+        <p>
+           
+        </p>
+        <input id = "AI-vs-H" type = "button" class="button" value = "人机对战" ondblclick = "AI_vs_human();" />       
+      </div>
+
+ </body>
+
+</html>

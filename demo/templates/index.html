@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Gomoku</title>
+    <link type="text/css" rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/lib/jquery-3.6.0.min.js"></script>
+    <style>
+        .div{width: 480px;height:480px; background:rgb(248, 204, 179);
+            margin:0 auto;
+        }
+        #black_node {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            box-sizing: content-box;
+            background-color: black;
+            border: 0.5px solid gray;
+        }
+        #white_node {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            box-sizing: content-box;
+            background-color: white;
+            border: 0.5px solid black;
+        }
+        body{
+            background-repeat: no-repeat;
+            background-size: 100% 200%;
+        }
+
+    .button {
+    display: inline-block;
+    padding: 7px 14px;
+    font-size: 9px;
+    cursor: pointer;
+    text-align: center;   
+    text-decoration: none;
+    outline: none;
+    color: #87cefa;
+    background-color: #ffffff;
+    border: 1px solid #008cba;
+    border-radius: 5px;
+    box-shadow: 0 3px #999;
+    }
+ 
+    .button:hover {background-color: #dcdcdc}
+ 
+    .button:active {
+    background-color: #ffffff;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+    }
+
+    </style>
+</head>
+        <h1 >Gomoku AI v1.0  </h1>
+              <h5> --made by yyx</h5>
+      
+<body background="../static/image/1.jpg">
+    <div id="black_node" style="visibility: hidden;z-index: 1;"></div>
+    <div id="white_node" style="visibility: hidden;z-index: 1;"></div>
+    <div class="div">
+        <canvas style="border:solid 2px black;margin: 15px;" id="my_canvas" height="450" width="450" ></canvas>
+
+        <script>
+                var human=-1,AI=-1
+                var can=document.getElementById('my_canvas');
+                var cxt=can.getContext('2d')
+                var board=[
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+                for(var i =0; i < 15; i++){
+                cxt.moveTo(15 + i * 30, 15);
+                cxt.lineTo(15 + i * 30 , 435);
+                cxt.stroke();
+                cxt.moveTo(15 , 15 + i * 30);
+                cxt.lineTo(435 , 15 + i * 30);
+                cxt.stroke();
+            }
+        var flag=-1;
+        var turn=0;
+        var pos;
+        var game_end=-1;
+        var pre_x=-1,pre_y=-1;
+        var pre_color=-1;
+        function human_first(){
+            flag=1;
+            human=1;AI=2;turn =0;
+            game_end=0;
+            $.get("/setting/1",(data,status)=>{if(data[0]!=1)window.alert("ERROR!");})
+        }
+        function human_first_ez(){
+            flag=1;
+            human=1;AI=2;turn =0;
+            game_end=0;
+            $.get("/ez_setting/1",(data,status)=>{if(data[0]!=1)window.alert("ERROR!");})
+        }
+
+        function AI_first(){
+            flag=1;
+            human=2;AI=1;turn =0;
+            game_end=0;
+            $.get("/setting/0",(data,status)=>{if(data[0]!=1)window.alert("ERROR!");
+            $.get("/action/-1+-1", (data, status) => {
+                    draw_chess(data[0],data[1],flag); turn++;
+                    board[data[0]][data[1]]=AI;
+                    flag=human;
+            })
+        })
+        }
+        function AI_first_ez(){
+            flag=1;
+            human=2;AI=1;turn =0;
+            game_end=0;
+            $.get("/ez_setting/0",(data,status)=>{if(data[0]!=1)window.alert("ERROR!");
+            $.get("/action/-1+-1", (data, status) => {
+                    draw_chess(data[0],data[1],flag); turn++;
+                    board[data[0]][data[1]]=AI;
+                    flag=human;
+            })
+        })
+        }
+        function check_win(role){
+            let jud=0;
+            for(let i=0;i<14;i++){
+                for(let j=0;j<14;j++){
+                    
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i,j+k)==0||board[i][j+k]!=role)jud=0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i,j-k)==0||board[i][j-k]!=role)jud=0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i+k,j)==0||board[i+k][j]!=role)jud=0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i-k,j)==0||board[i-k][j]!=role)jud=0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i+k,j+k)==0||board[i+k][j+k]!=role)jud =0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i-k,j-k)==0||board[i-k][j-k]!=role)jud=0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i+k,j-k)==0||board[i+k][j-k]!=role)jud=0;
+                    if(jud)return 1;
+
+                    jud=1;
+                    for(let k=0;k<5;k++)if(is_legal(i-k,j+k)==0||board[i-k][j+k]!=role)jud=0;
+                    if(jud)return 1;
+                }
+            }
+            return 0;
+        }
+        function mark_new_chess(xx,yy){
+            var ctx=can.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(xx-3,yy);
+            ctx.lineTo(xx+3,yy); 
+            ctx.fillStyle="blue";
+            ctx.stroke();
+            ctx.moveTo(xx,yy-3);
+            ctx.lineTo(xx,yy+3);
+            ctx.fillStyle="blue";
+            ctx.stroke();
+        }
+        function draw_new_chess(x,y,color){
+            cxt.beginPath();
+            var xx=x*30+15,yy=y*30+15;
+            cxt.arc(xx,yy,12,0,Math.PI*2);
+            cxt.stroke();
+            let gradient=cxt.createRadialGradient(xx,yy,12,xx,yy,0);
+            if(color==1){
+                gradient.addColorStop(0,'#333');
+                gradient.addColorStop(1,"#ccc");
+                cxt.fillStyle="#000";}
+            if(color==2){
+                gradient.addColorStop(0,'#999');
+                gradient.addColorStop(1,"#fff");
+            }
+            cxt.fillStyle=gradient;
+            cxt.fill(); 
+            cxt.closePath();
+            mark_new_chess(xx,yy);
+        }
+        function draw_pre_chess(x,y,color){
+            if(x==-1 || y==-1 )return;
+            cxt.beginPath();
+            var xx=x*30+15,yy=y*30+15;
+            cxt.arc(xx,yy,12,0,Math.PI*2);
+            cxt.stroke();
+            let gradient=cxt.createRadialGradient(xx,yy,12,xx,yy,0);
+            if(color==1){
+                gradient.addColorStop(0,'#333');
+                gradient.addColorStop(1,"#ccc");
+                cxt.fillStyle="#000";}
+            if(color==2){
+                gradient.addColorStop(0,'#999');
+                gradient.addColorStop(1,"#fff");
+            }
+            cxt.fillStyle=gradient;
+            cxt.fill(); 
+        }
+        function draw_chess(x,y,color){
+            if(color!=1&&color!=2)return ;
+            // window.alert(pre_color);
+            draw_new_chess(x,y,color);
+            draw_pre_chess(pre_x,pre_y,pre_color);
+            pre_x=x,pre_y=y;pre_color=color;
+        }
+        function flip_board(){
+            for(let i=0;i<15;i++){
+                for(let j=0;j<15;j++){
+                    if(board[i][j]==1){
+                        board[i][j]=2;
+                        draw_pre_chess(i,j,2);
+                    }
+                    else if(board[i][j]==2){
+                        board[i][j]=1;
+                        draw_pre_chess(i,j,1);
+                    }
+                }
+            }
+            if(pre_color==1)pre_color=2;
+            else if(pre_color==2)pre_color=1;
+            turn ++;
+        }
+        function change_role(){
+            if(turn!=3)return ;
+            flip_board();
+            flag=AI 
+            $.get("/action/-1+-1", (data, status) => {
+                    draw_chess(data[0],data[1],flag);
+                    turn++;
+                    board[data[0]][data[1]]=AI;
+                    flag=human;
+            })
+            turn++;
+        }
+        function is_legal(xx,yy){
+            if(xx>=0&&xx<=14&&yy>=0&&yy<=14)return 1;
+            return 0;
+        }
+        var cx=can.offsetLeft;
+        var cy=can.offsetTop;
+        document.onmousemove = function (e)  {
+            if ( e.x-cx>=-30&&e.x -cx<= 550 && e.y-cy>= -30 && e.y -cy<= 550&&flag==human&&game_end==0) {
+                if (flag == 1) pos = document.getElementById("black_node");
+                if(flag==2)  pos = document.getElementById("white_node");
+
+                    pos.style.visibility = "visible";
+                    pos.style.position = "absolute";
+                    pos.style.left = e.x  -5+ "px";
+                    pos.style.top = e.y -5 + "px";
+            }
+            else{
+            var a = document.getElementById("black_node");
+            a.style.visibility = "hidden";
+            var b = document.getElementById("white_node");
+            b.style.visibility = "hidden";
+            }
+        }
+        document.onmousedown = function (e) {
+            var a = document.getElementById("black_node");
+            a.style.visibility = "hidden";
+            var b = document.getElementById("white_node");
+            b.style.visibility = "hidden";  
+        if(game_end==-1&&e.y-cy<=450){
+            window.alert("请先选择先后手");
+        }
+        if(game_end==1&&e.y-cy<=450){
+            window.alert("已经结束了！");
+        }
+        if ( flag==human&&game_end==0) {
+            var x=e.x,y=e.y;
+            x-=cx;
+            y-=cy; 
+            x=Math.round((x-15) / 30);
+            y = Math.round((y) / 30);
+           // window.alert(x);
+            if (x <= 15 && y <= 15 ) {
+                if (board[x][y]==0){
+                draw_chess(x,y,flag);
+                if(check_win(AI)){
+                    game_end=1;
+                    setTimeout('window.alert("你输了")',500) ;
+                }
+                if(check_win(human)){
+                    game_end=1;
+                    setTimeout('window.alert("你赢了")',500) ;  
+                }
+                turn++;
+                board[x][y]=flag;         
+                flag=AI;
+                if(flag==AI){
+                    
+                    url="/action/"+x+"+"+y;
+                    $.get(url, (data, status) => {
+                    draw_chess(data[0],data[1],AI);flag=human;
+                    if(data[0]!=-1){
+                        board[data[0]][data[1]]=AI;
+                        if(check_win(AI)){
+                            game_end=1;
+                            setTimeout('window.alert("你输了")', 500); 
+                        }
+                        if(check_win(human)){
+                            game_end=1;
+                            setTimeout('window.alert("你赢了")' , 500) ;  
+                        
+                        }
+                    }
+                    else {
+                        flip_board();
+                        window.alert("AI flip the board");
+                    }
+                    })
+                    turn++;                    
+               }
+            }
+        }
+    }
+}
+function reload(){
+    window.location.reload();
+}
+function return_cover(){
+    window.location.href='http://127.0.0.1:5000';
+}
+</script>
+<input id = "flip the board"  type = "button" class="button"  value = "flip the board" ondblclick = "change_role();" />
+<input id = "先手" type = "button" class="button" value = "先手(困难AI)" ondblclick = "human_first();" />
+<input id = "后手" type = "button" class="button" value = "后手(困难AI)" ondblclick = "AI_first();" />
+<input id = "先手" type = "button" class="button"value = "先手(简单AI)" ondblclick = "human_first_ez();" />
+<input id = "后手" type = "button" class="button" value = "后手(简单AI)" ondblclick = "AI_first_ez();" />
+<input id = "重置" type = "button" class="button" value = "重置" ondblclick = "reload();" />
+<input id="return" type="button" class ="button" value="返回" ondblclick="return_cover();">
+</body>
+
+</html>
