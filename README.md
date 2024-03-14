@@ -1,6 +1,6 @@
-# Gomoku
-这是一个支持人人对战和人机对战的五子棋平台
+**Gomoku**
+This is a Gomoku platform that supports both player-vs-player and player-vs-computer gameplay.
 
-核心算法见sample.cpp采用alpha-beta剪枝搜索策略，支持6步搜索+6步算杀
+The core algorithm, as seen in sample.cpp, utilizes an alpha-beta pruning search strategy, supporting 6-ply search depth with a 6-ply look-ahead for kill moves.
 
-运行run.py即可
+To start the game, run run.py.
