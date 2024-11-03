@@ -15,3 +15,9 @@ To start the game, simply run the following script:
 
 ```bash
 python run.py
+ ```
+
+## Demo
+![image](pic/pic1.png)
+
+![image](pic/pic2.png)
