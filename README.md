@@ -1,7 +1,17 @@
-**Gomoku**
+# Gomoku Platform
 
-This is a Gomoku platform that supports both player-vs-player and player-vs-computer gameplay.
+This platform supports both player-vs-player and player-vs-computer gameplay in the game of Gomoku.
 
-The core algorithm, as seen in sample.cpp, utilizes an alpha-beta pruning search strategy, supporting 6-ply search depth with a 6-ply look-ahead for kill moves.
+## Core Algorithm
 
-To start the game, run run.py.
+The core algorithm, as implemented in `sample.cpp`, utilizes an alpha-beta pruning search strategy. It supports:
+
+- 6-ply search depth
+- 6-ply look-ahead for kill moves
+
+## Getting Started
+
+To start the game, simply run the following script:
+
+```bash
+python run.py
